@@ -10,8 +10,6 @@ export default function UploadNote() {
   const [title, setTitle] = useState("");
   const [description, setDescription] = useState("");
   const [tags, setTags] = useState("");
-  const [semester, setSemester] = useState("");
-  const [subject, setSubject] = useState("");
   const [file, setFile] = useState(null);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
@@ -57,8 +55,6 @@ export default function UploadNote() {
         await addDoc(collection(db, "notes"), {
           title: title.trim(),
           description: description.trim(),
-          semester: semester.trim(),
-          subject: subject.trim(),
           tags: tagsArray,
           fileUrl,
           fileName: file ? file.name : null,
@@ -123,35 +119,6 @@ export default function UploadNote() {
                 className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-transparent outline-none"
                 placeholder="Enter note title"
               />
-            </div>
-
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-              <div>
-                <label htmlFor="semester" className="block text-sm font-medium text-gray-700 mb-2">
-                  Semester
-                </label>
-                <input
-                  id="semester"
-                  type="text"
-                  value={semester}
-                  onChange={(e) => setSemester(e.target.value)}
-                  className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-transparent outline-none"
-                  placeholder="e.g., Fall 2024 or 3rd Semester"
-                />
-              </div>
-              <div>
-                <label htmlFor="subject" className="block text-sm font-medium text-gray-700 mb-2">
-                  Subject
-                </label>
-                <input
-                  id="subject"
-                  type="text"
-                  value={subject}
-                  onChange={(e) => setSubject(e.target.value)}
-                  className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-transparent outline-none"
-                  placeholder="e.g., Physics, Calculus"
-                />
-              </div>
             </div>
 
             <div>

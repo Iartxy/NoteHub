@@ -33,17 +33,6 @@ export default function NoteCard({ note }) {
         <span>{formatDate(note.createdAt)}</span>
       </div>
 
-      {(note.semester || note.subject) && (
-        <div className="mt-3 flex flex-wrap gap-2 text-xs text-gray-600">
-          {note.semester && (
-            <span className="px-2 py-1 bg-gray-100 rounded-full">Semester: {note.semester}</span>
-          )}
-          {note.subject && (
-            <span className="px-2 py-1 bg-gray-100 rounded-full">Subject: {note.subject}</span>
-          )}
-        </div>
-      )}
-
       {note.tags && note.tags.length > 0 && (
         <div className="mt-3 flex flex-wrap gap-2">
           {note.tags.slice(0, 3).map((tag, index) => (

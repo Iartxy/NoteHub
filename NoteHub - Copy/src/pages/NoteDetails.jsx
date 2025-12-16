@@ -142,17 +142,6 @@ export default function NoteDetails() {
                 ))}
               </div>
             )}
-
-            {(note.semester || note.subject) && (
-              <div className="flex flex-wrap gap-3 mb-6 text-sm text-gray-700">
-                {note.semester && (
-                  <span className="px-3 py-1 bg-gray-100 rounded-full">Semester: {note.semester}</span>
-                )}
-                {note.subject && (
-                  <span className="px-3 py-1 bg-gray-100 rounded-full">Subject: {note.subject}</span>
-                )}
-              </div>
-            )}
           </div>
 
           {note.description && (

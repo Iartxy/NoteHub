@@ -9,6 +9,9 @@ export default function Dashboard() {
   const [notes, setNotes] = useState([]);
   const [loading, setLoading] = useState(true);
   const [searchTerm, setSearchTerm] = useState("");
+  const [semesterFilter, setSemesterFilter] = useState("");
+  const [subjectFilter, setSubjectFilter] = useState("");
+  const [tagFilter, setTagFilter] = useState("");
   const { currentUser } = useAuth();
 
   useEffect(() => {
@@ -26,12 +29,28 @@ export default function Dashboard() {
     return () => unsubscribe();
   }, []);
 
-  const filteredNotes = notes.filter(
-    (note) =>
-      note.title?.toLowerCase().includes(searchTerm.toLowerCase()) ||
-      note.description?.toLowerCase().includes(searchTerm.toLowerCase()) ||
-      note.tags?.some((tag) => tag.toLowerCase().includes(searchTerm.toLowerCase()))
+  const semesters = ["I", "II", "III", "IV", "V", "VI"];
+  const subjects = ["OOP", "AAD", "JAVA", "C"];
+  const tags = Array.from(
+    new Set(notes.flatMap((note) => (note.tags ? note.tags : [])).filter(Boolean))
   );
+
+  const filteredNotes = notes.filter((note) => {
+    const term = searchTerm.toLowerCase();
+    const matchesSearch =
+      !term ||
+      note.title?.toLowerCase().includes(term) ||
+      note.description?.toLowerCase().includes(term) ||
+      note.tags?.some((tag) => tag.toLowerCase().includes(term));
+
+    const matchesSemester = !semesterFilter || note.semester === semesterFilter;
+    const matchesSubject = !subjectFilter || note.subject === subjectFilter;
+    const matchesTag =
+      !tagFilter ||
+      (note.tags && note.tags.some((tag) => tag.toLowerCase() === tagFilter.toLowerCase()));
+
+    return matchesSearch && matchesSemester && matchesSubject && matchesTag;
+  });
 
   if (!currentUser) {
     return (
@@ -58,6 +77,70 @@ export default function Dashboard() {
             onChange={(e) => setSearchTerm(e.target.value)}
             className="w-full max-w-md px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-transparent outline-none"
           />
+        </div>
+
+        <div className="mb-8 grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
+          <div>
+            <label className="block text-sm font-medium text-gray-700 mb-2">Semester</label>
+            <select
+              value={semesterFilter}
+              onChange={(e) => setSemesterFilter(e.target.value)}
+              className="w-full px-4 py-3 border border-gray-300 rounded-lg bg-white focus:ring-2 focus:ring-indigo-500 focus:border-transparent outline-none"
+            >
+              <option value="">All semesters</option>
+              {semesters.map((semester) => (
+                <option key={semester} value={semester}>
+                  {semester}
+                </option>
+              ))}
+            </select>
+          </div>
+
+          <div>
+            <label className="block text-sm font-medium text-gray-700 mb-2">Subject</label>
+            <select
+              value={subjectFilter}
+              onChange={(e) => setSubjectFilter(e.target.value)}
+              className="w-full px-4 py-3 border border-gray-300 rounded-lg bg-white focus:ring-2 focus:ring-indigo-500 focus:border-transparent outline-none"
+            >
+              <option value="">All subjects</option>
+              {subjects.map((subject) => (
+                <option key={subject} value={subject}>
+                  {subject}
+                </option>
+              ))}
+            </select>
+          </div>
+
+          <div>
+            <label className="block text-sm font-medium text-gray-700 mb-2">Tags</label>
+            <select
+              value={tagFilter}
+              onChange={(e) => setTagFilter(e.target.value)}
+              className="w-full px-4 py-3 border border-gray-300 rounded-lg bg-white focus:ring-2 focus:ring-indigo-500 focus:border-transparent outline-none"
+            >
+              <option value="">All tags</option>
+              {tags.map((tag) => (
+                <option key={tag} value={tag}>
+                  {tag}
+                </option>
+              ))}
+            </select>
+          </div>
+
+          <div className="flex items-end">
+            <button
+              onClick={() => {
+                setSemesterFilter("");
+                setSubjectFilter("");
+                setTagFilter("");
+                setSearchTerm("");
+              }}
+              className="w-full px-4 py-3 border border-gray-300 rounded-lg text-gray-700 hover:bg-gray-50 transition"
+            >
+              Clear filters
+            </button>
+          </div>
         </div>
 
         {loading ? (
