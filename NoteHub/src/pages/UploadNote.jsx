@@ -136,7 +136,7 @@ export default function UploadNote() {
                   value={semester}
                   onChange={(e) => setSemester(e.target.value)}
                   className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-transparent outline-none"
-                  placeholder="e.g., Fall 2024 or 3rd Semester"
+                  placeholder="e.g., 2nd Semester or 3rd Semester"
                 />
               </div>
               <div>
