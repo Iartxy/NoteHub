@@ -11,9 +11,15 @@ function PrivateRoute({ children }) {
   return currentUser ? children : <Navigate to="/" />;
 }
 
+import { useLocation } from "react-router-dom";
+
 function PublicRoute({ children }) {
   const { currentUser } = useAuth();
-  return currentUser ? <Navigate to="/dashboard" /> : children;
+  const location = useLocation();
+  // If there's a redirectTo in state (coming from a protected redirect), allow rendering the public route
+  // so it can perform the post-login navigation; otherwise, if user is already authenticated, send to dashboard.
+  if (currentUser && !location.state?.redirectTo) return <Navigate to="/dashboard" />;
+  return children;
 }
 
 function AppRoutes() {
