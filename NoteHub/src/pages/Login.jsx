@@ -9,6 +9,9 @@ export default function Login() {
   const [loading, setLoading] = useState(false);
   const { login } = useAuth();
   const navigate = useNavigate();
+  const location = useLocation();
+  const redirectTo = location.state?.redirectTo || "/dashboard";
+  const shouldOpenFile = location.state?.openFile;
 
   async function handleSubmit(e) {
     e.preventDefault();
@@ -17,7 +20,8 @@ export default function Login() {
       setError("");
       setLoading(true);
       await login(email, password);
-      navigate("/dashboard");
+      // Navigate back to the original path. If it indicates the file should be opened, preserve that in state
+      navigate(redirectTo, { state: { openFile: shouldOpenFile } });
     } catch (err) {
       setError("Failed to log in. Please check your credentials.");
       console.error(err);

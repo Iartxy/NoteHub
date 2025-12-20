@@ -1,5 +1,5 @@
 import { useState, useEffect } from "react";
-import { useParams, useNavigate } from "react-router-dom";
+import { useParams, useNavigate, useLocation } from "react-router-dom";
 import { doc, getDoc, updateDoc } from "firebase/firestore";
 import { db } from "../firebase";
 import Navbar from "../components/Navbar";
@@ -14,9 +14,17 @@ export default function NoteDetails() {
   const [shareStatus, setShareStatus] = useState(""); // '' | 'copied' | 'shared' | 'error'
   const { currentUser } = useAuth();
 
+  const location = useLocation();
+
   useEffect(() => {
     async function fetchNote() {
       try {
+        // If user is not authenticated, redirect to login and include return info
+        if (!currentUser) {
+          navigate(`/login`, { state: { redirectTo: location.pathname, openFile: true } });
+          return;
+        }
+
         const noteDoc = await getDoc(doc(db, "notes", id));
         
         if (!noteDoc.exists()) {
@@ -33,6 +41,13 @@ export default function NoteDetails() {
           await updateDoc(doc(db, "notes", id), {
             views: (noteData.views || 0) + 1,
           });
+        }
+
+        // If query or state says open file, open it immediately
+        if (location.state?.openFile || new URLSearchParams(location.search).get("openFile") === "1") {
+          if (noteData.fileUrl) {
+            window.open(noteData.fileUrl, "_blank");
+          }
         }
       } catch (err) {
         setError("Failed to load note");
