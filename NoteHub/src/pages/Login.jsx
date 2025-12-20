@@ -10,9 +10,9 @@ export default function Login() {
   const { login } = useAuth();
   const navigate = useNavigate();
   const location = useLocation();
-  const redirectTo = location.state?.redirectTo || "/dashboard";
-  const urlParams = new URLSearchParams(location.search);
-  const shouldOpenFile = location.state?.openFile || urlParams.get("openFile") === "1";
+  const params = new URLSearchParams(location.search);
+  const redirectTo = location.state?.redirectTo || params.get("redirectTo") || "/dashboard";
+  const shouldOpenFile = location.state?.openFile || params.get("openFile") === "1";
 
   async function handleSubmit(e) {
     e.preventDefault();

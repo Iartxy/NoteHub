@@ -16,9 +16,10 @@ import { useLocation } from "react-router-dom";
 function PublicRoute({ children }) {
   const { currentUser } = useAuth();
   const location = useLocation();
-  // If there's a redirectTo in state (coming from a protected redirect), allow rendering the public route
-  // so it can perform the post-login navigation; otherwise, if user is already authenticated, send to dashboard.
-  if (currentUser && !location.state?.redirectTo) return <Navigate to="/dashboard" />;
+  const params = new URLSearchParams(location.search);
+  const hasRedirectTo = Boolean(location.state?.redirectTo || params.get("redirectTo"));
+  // When there's a redirectTo (either in state or in URL), allow the public route to render so the login page can complete the post-login navigation.
+  if (currentUser && !hasRedirectTo) return <Navigate to="/dashboard" />;
   return children;
 }
 
