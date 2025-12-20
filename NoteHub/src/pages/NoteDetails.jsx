@@ -22,7 +22,8 @@ export default function NoteDetails() {
         // If user is not authenticated, redirect to login and include return info (preserve search params)
         if (!currentUser) {
           const returnPath = location.pathname + (location.search || "");
-          navigate(`/login`, { state: { redirectTo: returnPath, openFile: true } });
+          // Navigate to the login route (root path) and include return info
+          navigate(`/`, { state: { redirectTo: returnPath, openFile: true } });
           return;
         }
 
