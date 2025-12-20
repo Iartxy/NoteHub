@@ -11,7 +11,7 @@ export default function NoteDetails() {
   const [note, setNote] = useState(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
-  const [copied, setCopied] = useState(false);
+  const [shareStatus, setShareStatus] = useState(""); // '' | 'copied' | 'shared' | 'error'
   const { currentUser } = useAuth();
 
   useEffect(() => {
@@ -45,11 +45,31 @@ export default function NoteDetails() {
     fetchNote();
   }, [id, currentUser]);
 
-  function handleCopyLink() {
-    const link = window.location.href;
-    navigator.clipboard.writeText(link);
-    setCopied(true);
-    setTimeout(() => setCopied(false), 2000);
+  async function handleShare() {
+    const url = window.location.href;
+    // Use Web Share API if available
+    if (navigator.share) {
+      try {
+        await navigator.share({ title: note.title, text: note.description || "", url });
+        setShareStatus("shared");
+        setTimeout(() => setShareStatus(""), 2000);
+        return;
+      } catch (err) {
+        // If the user cancels or an error occurs, fall back to clipboard
+        console.warn("Web Share failed or cancelled, falling back to clipboard", err);
+      }
+    }
+
+    // Fallback: copy to clipboard
+    try {
+      await navigator.clipboard.writeText(url);
+      setShareStatus("copied");
+      setTimeout(() => setShareStatus(""), 2000);
+    } catch (err) {
+      console.error(err);
+      setShareStatus("error");
+      setTimeout(() => setShareStatus(""), 2000);
+    }
   }
 
   function formatDate(timestamp) {
@@ -122,12 +142,27 @@ export default function NoteDetails() {
                   </>
                 )}
               </div>
-              <button
-                onClick={handleCopyLink}
-                className="px-4 py-2 bg-indigo-100 text-indigo-700 rounded-lg hover:bg-indigo-200 transition text-sm font-medium"
-              >
-                {copied ? "✓ Copied!" : "Share Link"}
-              </button>
+              <div className="flex items-center space-x-3">
+                <button
+                  onClick={handleShare}
+                  className="px-4 py-2 bg-indigo-100 text-indigo-700 rounded-lg hover:bg-indigo-200 transition text-sm font-medium"
+                >
+                  {shareStatus === "shared"
+                    ? "✓ Shared!"
+                    : shareStatus === "copied"
+                    ? "✓ Copied!"
+                    : shareStatus === "error"
+                    ? "Error"
+                    : "Share"}
+                </button>
+
+                <a
+                  href={`mailto:?subject=${encodeURIComponent(note.title)}&body=${encodeURIComponent(window.location.href + "\n\n" + (note.description || ""))}`}
+                  className="px-3 py-2 bg-gray-100 text-gray-700 rounded-lg hover:bg-gray-200 transition text-sm font-medium"
+                >
+                  Email
+                </a>
+              </div>
             </div>
 
             {note.tags && note.tags.length > 0 && (
