@@ -25,6 +25,8 @@ export default function Login() {
       setError("");
       setLoading(true);
       await login(email, password);
+      // Small delay to ensure auth state propagates on mobile/browsers (reduces race conditions)
+      await new Promise((res) => setTimeout(res, 1500));
       // Navigate back to the original path, appending openFile=1 as query param when requested
       let target = redirectTo;
       if (shouldOpenFile) {
