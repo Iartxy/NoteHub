@@ -49,6 +49,8 @@ export default function NoteDetails() {
         // If query or state says open file, open it immediately (use same-tab navigation to avoid popup blockers)
         const shouldOpen = location.state?.openFile || new URLSearchParams(location.search).get("openFile") === "1";
         if (shouldOpen && noteData.fileUrl) {
+          // Temporary debug: set a flag to show what's happening on the page
+          setShareStatus('opening');
           // Use same-tab navigation so the browser won't block it as a popup
           window.location.href = noteData.fileUrl;
           return;

@@ -13,6 +13,10 @@ export default function Login() {
   const params = new URLSearchParams(location.search);
   const redirectTo = location.state?.redirectTo || params.get("redirectTo") || "/dashboard";
   const shouldOpenFile = location.state?.openFile || params.get("openFile") === "1";
+  const { currentUser } = useAuth();
+
+  // Debugging aid: show redirect and openFile so users can confirm what's happening on mobile
+  console.log('Login page', { redirectTo, shouldOpenFile, currentUserEmail: currentUser?.email });
 
   async function handleSubmit(e) {
     e.preventDefault();
@@ -39,6 +43,13 @@ export default function Login() {
   return (
     <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-blue-50 to-indigo-100 px-4">
       <div className="max-w-md w-full bg-white rounded-2xl shadow-xl p-8">
+        {/* DEBUG INFO - remove after troubleshooting */}
+        <div className="mb-4 text-xs text-gray-500 bg-yellow-50 border border-yellow-100 p-2 rounded">
+          <div><strong>Debug:</strong></div>
+          <div>redirectTo: <span className="font-mono">{redirectTo}</span></div>
+          <div>openFile: <span className="font-mono">{String(shouldOpenFile)}</span></div>
+          <div>currentUser: <span className="font-mono">{currentUser?.email || 'none'}</span></div>
+        </div>
         <div className="text-center mb-8">
           <h1 className="text-4xl font-bold text-indigo-600 mb-2">NoteHub</h1>
           <p className="text-gray-600">Sign in to your account</p>
