@@ -11,7 +11,8 @@ export default function Login() {
   const navigate = useNavigate();
   const location = useLocation();
   const redirectTo = location.state?.redirectTo || "/dashboard";
-  const shouldOpenFile = location.state?.openFile;
+  const urlParams = new URLSearchParams(location.search);
+  const shouldOpenFile = location.state?.openFile || urlParams.get("openFile") === "1";
 
   async function handleSubmit(e) {
     e.preventDefault();
@@ -20,8 +21,13 @@ export default function Login() {
       setError("");
       setLoading(true);
       await login(email, password);
-      // Navigate back to the original path. If it indicates the file should be opened, preserve that in state
-      navigate(redirectTo, { state: { openFile: shouldOpenFile } });
+      // Navigate back to the original path, appending openFile=1 as query param when requested
+      let target = redirectTo;
+      if (shouldOpenFile) {
+        // If redirectTo already has a query string, append with &
+        target = redirectTo.includes("?") ? `${redirectTo}&openFile=1` : `${redirectTo}?openFile=1`;
+      }
+      navigate(target);
     } catch (err) {
       setError("Failed to log in. Please check your credentials.");
       console.error(err);

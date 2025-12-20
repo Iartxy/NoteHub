@@ -19,9 +19,10 @@ export default function NoteDetails() {
   useEffect(() => {
     async function fetchNote() {
       try {
-        // If user is not authenticated, redirect to login and include return info
+        // If user is not authenticated, redirect to login and include return info (preserve search params)
         if (!currentUser) {
-          navigate(`/login`, { state: { redirectTo: location.pathname, openFile: true } });
+          const returnPath = location.pathname + (location.search || "");
+          navigate(`/login`, { state: { redirectTo: returnPath, openFile: true } });
           return;
         }
 
@@ -43,11 +44,12 @@ export default function NoteDetails() {
           });
         }
 
-        // If query or state says open file, open it immediately
-        if (location.state?.openFile || new URLSearchParams(location.search).get("openFile") === "1") {
-          if (noteData.fileUrl) {
-            window.open(noteData.fileUrl, "_blank");
-          }
+        // If query or state says open file, open it immediately (use same-tab navigation to avoid popup blockers)
+        const shouldOpen = location.state?.openFile || new URLSearchParams(location.search).get("openFile") === "1";
+        if (shouldOpen && noteData.fileUrl) {
+          // Use same-tab navigation so the browser won't block it as a popup
+          window.location.href = noteData.fileUrl;
+          return;
         }
       } catch (err) {
         setError("Failed to load note");
